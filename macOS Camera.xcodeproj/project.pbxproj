@@ -7,10 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		503F9525283D3DE400317AD1 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 503F9524283D3DE400317AD1 /* README.md */; };
+		50C83AE8283DD42F00C46A89 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C83AE7283DD42F00C46A89 /* SettingsViewController.swift */; };
 		EBAE9C5C2832D5830061CDEE /* CameraManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBAE9C5B2832D5830061CDEE /* CameraManager.swift */; };
 		EBAE9C5D2832D5830061CDEE /* CameraManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBAE9C5B2832D5830061CDEE /* CameraManager.swift */; };
 		F07A15CC1EADFDC500E8FA1B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F07A15CB1EADFDC500E8FA1B /* AppDelegate.swift */; };
-		F07A15CE1EADFDC500E8FA1B /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F07A15CD1EADFDC500E8FA1B /* ViewController.swift */; };
+		F07A15CE1EADFDC500E8FA1B /* CameraViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F07A15CD1EADFDC500E8FA1B /* CameraViewController.swift */; };
 		F07A15D01EADFDC500E8FA1B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F07A15CF1EADFDC500E8FA1B /* Assets.xcassets */; };
 		F07A15D31EADFDC500E8FA1B /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F07A15D11EADFDC500E8FA1B /* Main.storyboard */; };
 		F07A15DE1EADFDC500E8FA1B /* macOS_CameraTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F07A15DD1EADFDC500E8FA1B /* macOS_CameraTests.swift */; };
@@ -35,10 +37,12 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		503F9524283D3DE400317AD1 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		50C83AE7283DD42F00C46A89 /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
 		EBAE9C5B2832D5830061CDEE /* CameraManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CameraManager.swift; sourceTree = "<group>"; };
 		F07A15C81EADFDC500E8FA1B /* macOS Camera.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "macOS Camera.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F07A15CB1EADFDC500E8FA1B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		F07A15CD1EADFDC500E8FA1B /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		F07A15CD1EADFDC500E8FA1B /* CameraViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraViewController.swift; sourceTree = "<group>"; };
 		F07A15CF1EADFDC500E8FA1B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		F07A15D21EADFDC500E8FA1B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		F07A15D41EADFDC500E8FA1B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -75,9 +79,43 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		50C83AE9283DD44400C46A89 /* Camera */ = {
+			isa = PBXGroup;
+			children = (
+				F07A15CD1EADFDC500E8FA1B /* CameraViewController.swift */,
+			);
+			path = Camera;
+			sourceTree = "<group>";
+		};
+		50C83AEA283DD45000C46A89 /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				50C83AE7283DD42F00C46A89 /* SettingsViewController.swift */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
+		50C83AEB283DD46200C46A89 /* Module */ = {
+			isa = PBXGroup;
+			children = (
+				50C83AEA283DD45000C46A89 /* Settings */,
+				50C83AE9283DD44400C46A89 /* Camera */,
+			);
+			path = Module;
+			sourceTree = "<group>";
+		};
+		50C83AEC283DD46F00C46A89 /* Manager */ = {
+			isa = PBXGroup;
+			children = (
+				EBAE9C5B2832D5830061CDEE /* CameraManager.swift */,
+			);
+			path = Manager;
+			sourceTree = "<group>";
+		};
 		F07A15BF1EADFDC500E8FA1B = {
 			isa = PBXGroup;
 			children = (
+				503F9524283D3DE400317AD1 /* README.md */,
 				F07A15CA1EADFDC500E8FA1B /* macOS Camera */,
 				F07A15DC1EADFDC500E8FA1B /* macOS CameraTests */,
 				F07A15E71EADFDC500E8FA1B /* macOS CameraUITests */,
@@ -98,9 +136,9 @@
 		F07A15CA1EADFDC500E8FA1B /* macOS Camera */ = {
 			isa = PBXGroup;
 			children = (
+				50C83AEC283DD46F00C46A89 /* Manager */,
+				50C83AEB283DD46200C46A89 /* Module */,
 				F07A15CB1EADFDC500E8FA1B /* AppDelegate.swift */,
-				EBAE9C5B2832D5830061CDEE /* CameraManager.swift */,
-				F07A15CD1EADFDC500E8FA1B /* ViewController.swift */,
 				F07A15CF1EADFDC500E8FA1B /* Assets.xcassets */,
 				F07A15D11EADFDC500E8FA1B /* Main.storyboard */,
 				F07A15D41EADFDC500E8FA1B /* Info.plist */,
@@ -236,6 +274,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				503F9525283D3DE400317AD1 /* README.md in Resources */,
 				F07A15D01EADFDC500E8FA1B /* Assets.xcassets in Resources */,
 				F07A15D31EADFDC500E8FA1B /* Main.storyboard in Resources */,
 			);
@@ -262,9 +301,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F07A15CE1EADFDC500E8FA1B /* ViewController.swift in Sources */,
+				F07A15CE1EADFDC500E8FA1B /* CameraViewController.swift in Sources */,
 				EBAE9C5C2832D5830061CDEE /* CameraManager.swift in Sources */,
 				F07A15CC1EADFDC500E8FA1B /* AppDelegate.swift in Sources */,
+				50C83AE8283DD42F00C46A89 /* SettingsViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
