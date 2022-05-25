@@ -452,6 +452,7 @@
 				DEVELOPMENT_TEAM = U82TG7992X;
 				INFOPLIST_FILE = "macOS Camera/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.mihailsalari.macOS-Camera";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -466,6 +467,7 @@
 				DEVELOPMENT_TEAM = U82TG7992X;
 				INFOPLIST_FILE = "macOS Camera/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.mihailsalari.macOS-Camera";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;

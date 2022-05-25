@@ -43,6 +43,19 @@ enum CameraError: LocalizedError {
     }
 }
 
+enum CameraSettingError: LocalizedError {
+    case cannotAddExposure
+    case cannotAddWhiteBalance
+    
+    var localizedDescription: String {
+        switch self {
+        case .cannotAddExposure: return "Cannot add exposure"
+        case .cannotAddWhiteBalance: return "Cannot add white balance"
+        }
+    }
+}
+
+
 typealias CameraCaptureOutput = AVCaptureOutput
 typealias CameraSampleBuffer = CMSampleBuffer
 typealias CameraCaptureConnection = AVCaptureConnection
@@ -50,6 +63,8 @@ typealias CameraCaptureConnection = AVCaptureConnection
 protocol CameraManagerDelegate: AnyObject {
     func cameraManager(_ output: CameraCaptureOutput, didOutput sampleBuffer: CameraSampleBuffer, from connection: CameraCaptureConnection)
     func devicesList(_ list: [AVCaptureDevice])
+    func getExposureRange() -> [Int]
+    func getWhiteBalanceRange() -> [Int]
 }
 
 protocol CameraManagerProtocol: AnyObject {
@@ -186,6 +201,43 @@ final class CameraManager: NSObject, CameraManagerProtocol {
         try? FileManager.default.removeItem(at: fileUrl)
         return fileUrl
     }
+}
+
+extension CameraManager {
+    func setExposure() throws {
+        do {
+            try cameraDevice.lockForConfiguration()
+            cameraDevice.expos
+            try cameraDevice.unlockForConfiguration()
+        }
+        
+        guard let isSupported = cameraDevice.isExposureModeSupported(.autoExpose)) else { return }
+        do {
+            cameraDevice.exposureMode = .autoExpose
+            try cameraDevice.setExposureModeCustom(duration: <#T##CMTime#>, iso: <#T##Float#>, completionHandler: <#T##((CMTime) -> Void)?#>)
+
+            try cameraDevice.lockForConfiguration()
+        } catch {
+            throw CameraSettingError.cannotAddExposure
+        }
+    }
+    
+    func setWhiteBalance() throws {
+        do {
+            cameraDevice.exposureMode = .autoExpose
+        } catch {
+            throw CameraSettingError.cannotAddWhiteBalance
+        }
+    }
+    
+    func enableAutoExposure() {
+        cameraDevice.exposureMode = .autoExpose
+    }
+    
+    func enableAutoWhiteBalance() {
+        cameraDevice.whiteBalanceMode = .autoWhiteBalance
+    }
+    
 }
 
 // MARK: - AVCaptureVideoDataOutputSampleBufferDelegate
