@@ -765,7 +765,7 @@
                                             </textField>
                                             <slider verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="EFa-8g-9rA">
                                                 <rect key="frame" x="75" y="-6" width="249" height="28"/>
-                                                <sliderCell key="cell" state="on" alignment="left" maxValue="100" doubleValue="50" tickMarkPosition="above" sliderType="linear" id="rgC-if-TwT"/>
+                                                <sliderCell key="cell" state="on" alignment="left" maxValue="1" doubleValue="1" tickMarkPosition="above" sliderType="linear" id="rgC-if-TwT"/>
                                                 <connections>
                                                     <action selector="exposureSlider:" target="fLV-Hf-Aka" id="Woz-nv-tJW"/>
                                                 </connections>
@@ -776,6 +776,9 @@
                                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                                     <font key="font" metaFont="system"/>
                                                 </buttonCell>
+                                                <connections>
+                                                    <action selector="autoExposureCheckbox:" target="fLV-Hf-Aka" id="yIm-Pe-kHH"/>
+                                                </connections>
                                             </button>
                                         </subviews>
                                         <visibilityPriorities>
@@ -802,9 +805,9 @@
                                             </textField>
                                             <slider verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="n8F-gU-SmG">
                                                 <rect key="frame" x="105" y="-6" width="249" height="28"/>
-                                                <sliderCell key="cell" state="on" alignment="left" maxValue="100" doubleValue="50" tickMarkPosition="above" sliderType="linear" id="nWg-hF-MYs"/>
+                                                <sliderCell key="cell" state="on" alignment="left" maxValue="1" doubleValue="1" tickMarkPosition="above" sliderType="linear" id="nWg-hF-MYs"/>
                                                 <connections>
-                                                    <action selector="whiteBalanceRecording:" target="fLV-Hf-Aka" id="SGA-EG-M3w"/>
+                                                    <action selector="whiteBalanceSlider:" target="fLV-Hf-Aka" id="EYt-WR-4Tg"/>
                                                 </connections>
                                             </slider>
                                             <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="SNS-le-HeM">
@@ -813,6 +816,9 @@
                                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                                     <font key="font" metaFont="system"/>
                                                 </buttonCell>
+                                                <connections>
+                                                    <action selector="autoWhiteBalanceCheckbox:" target="fLV-Hf-Aka" id="lXl-CZ-axN"/>
+                                                </connections>
                                             </button>
                                         </subviews>
                                         <visibilityPriorities>
@@ -850,6 +856,17 @@
                                     <action selector="closeButton:" target="fLV-Hf-Aka" id="4sC-bN-eze"/>
                                 </connections>
                             </button>
+                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="iXu-dy-q32">
+                                <rect key="frame" x="307" y="13" width="69" height="32"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <buttonCell key="cell" type="push" title="Apply" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="zRK-En-QwO">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="applyTapped:" target="fLV-Hf-Aka" id="Zu8-td-yhQ"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <constraints>
                             <constraint firstAttribute="trailing" secondItem="btg-Ik-Qh5" secondAttribute="trailing" constant="20" id="B7S-nO-Ti4"/>
@@ -857,6 +874,12 @@
                             <constraint firstItem="btg-Ik-Qh5" firstAttribute="top" secondItem="Udf-qB-6xC" secondAttribute="top" constant="30" id="yb9-5x-9Fh"/>
                         </constraints>
                     </view>
+                    <connections>
+                        <outlet property="exposureButton" destination="Mus-nq-wZW" id="NyI-Jk-8jf"/>
+                        <outlet property="exposureSlider" destination="EFa-8g-9rA" id="ao0-yD-P1a"/>
+                        <outlet property="whiteBalanceButton" destination="SNS-le-HeM" id="UZM-yP-fAp"/>
+                        <outlet property="whiteBalanceSlider" destination="n8F-gU-SmG" id="YSP-eg-gFl"/>
+                    </connections>
                 </viewController>
                 <customObject id="86S-9m-X4o" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>

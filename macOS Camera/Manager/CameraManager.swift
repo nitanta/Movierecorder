@@ -44,13 +44,11 @@ enum CameraError: LocalizedError {
 }
 
 enum CameraSettingError: LocalizedError {
-    case cannotAddExposure
-    case cannotAddWhiteBalance
+    case failedToApply
     
     var localizedDescription: String {
         switch self {
-        case .cannotAddExposure: return "Cannot add exposure"
-        case .cannotAddWhiteBalance: return "Cannot add white balance"
+        case .failedToApply: return "Failed to appy setting"
         }
     }
 }
@@ -63,8 +61,6 @@ typealias CameraCaptureConnection = AVCaptureConnection
 protocol CameraManagerDelegate: AnyObject {
     func cameraManager(_ output: CameraCaptureOutput, didOutput sampleBuffer: CameraSampleBuffer, from connection: CameraCaptureConnection)
     func devicesList(_ list: [AVCaptureDevice])
-    func getExposureRange() -> [Int]
-    func getWhiteBalanceRange() -> [Int]
 }
 
 protocol CameraManagerProtocol: AnyObject {
@@ -79,9 +75,14 @@ protocol CameraManagerProtocol: AnyObject {
     func loadDevices()
     func changeDevice(_ device: AVCaptureDevice)
     
+    func changeSetting(_ setting: CameraSetting) throws
 }
 
-final class CameraManager: NSObject, CameraManagerProtocol {
+protocol CameraSettingProtocol: AnyObject {
+    func getCurrentSetting() -> CameraSetting
+}
+
+final class CameraManager: NSObject, CameraManagerProtocol, CameraSettingProtocol {
     
     private var previewLayer: AVCaptureVideoPreviewLayer!
     private var videoSession: AVCaptureSession!
@@ -93,6 +94,11 @@ final class CameraManager: NSObject, CameraManagerProtocol {
     private let containerView: NSView
     
     weak var delegate: CameraManagerDelegate?
+    
+    struct Constants {
+        static let kExposureDurationPower = 5.0 // Higher numbers will give the slider more sensitivity at shorter durations
+        static let kExposureMinimumDuration = 1.0/1000 // Limit exposure duration to a useful range
+    }
     
     init(containerView: NSView) throws {
         self.containerView = containerView
@@ -106,6 +112,11 @@ final class CameraManager: NSObject, CameraManagerProtocol {
         cameraDevice = nil
     }
     
+}
+
+// MARK: - Camera handler
+
+extension CameraManager {
     func loadDevices() {
         let devices = AVCaptureDevice.devices()
         let videoDevices = devices.filter { $0.hasMediaType(.video) }
@@ -203,41 +214,76 @@ final class CameraManager: NSObject, CameraManagerProtocol {
     }
 }
 
-extension CameraManager {
-    func setExposure() throws {
-        do {
-            try cameraDevice.lockForConfiguration()
-            cameraDevice.expos
-            try cameraDevice.unlockForConfiguration()
-        }
-        
-        guard let isSupported = cameraDevice.isExposureModeSupported(.autoExpose)) else { return }
-        do {
-            cameraDevice.exposureMode = .autoExpose
-            try cameraDevice.setExposureModeCustom(duration: <#T##CMTime#>, iso: <#T##Float#>, completionHandler: <#T##((CMTime) -> Void)?#>)
+// MARK: - Setting handler
 
-            try cameraDevice.lockForConfiguration()
-        } catch {
-            throw CameraSettingError.cannotAddExposure
-        }
+extension CameraManager {
+    
+    func getCurrentSetting() -> CameraSetting {
+        guard let device = cameraDevice else { return CameraSetting() }
+        
+        let isAutoExposure = device.exposureMode == .autoExpose
+        let isAutoWhiteBalance = device.whiteBalanceMode == .autoWhiteBalance
+        
+        let exposureDurationSeconds = CMTimeGetSeconds(cameraDevice.exposureDuration ?? CMTime())
+        let minExposureDurationSeconds = max(CMTimeGetSeconds(cameraDevice.activeFormat.minExposureDuration ?? CMTime()), Constants.kExposureMinimumDuration)
+        let maxExposureDurationSeconds = CMTimeGetSeconds(cameraDevice.activeFormat.maxExposureDuration ?? CMTime())
+        // Map from duration to non-linear UI range 0-1
+        let p = (exposureDurationSeconds - minExposureDurationSeconds) / (maxExposureDurationSeconds - minExposureDurationSeconds) // Scale to 0-1
+        
+        let exposureValue = Float(pow(p, 1 / Constants.kExposureDurationPower))
+        
+        
+        let whiteBalanceGains = cameraDevice.deviceWhiteBalanceGains ?? AVCaptureDevice.WhiteBalanceGains()
+        let whiteBalanceTemperatureAndTint = cameraDevice.temperatureAndTintValues(for: whiteBalanceGains) ?? AVCaptureDevice.WhiteBalanceTemperatureAndTintValues()
+        
+        let whiteBalanceValue  = whiteBalanceTemperatureAndTint.temperature
+        
+        return CameraSetting(isAutoExposureEnabled: isAutoExposure, isAutoWhiteBalanceEnabled: isAutoWhiteBalance, exposureValue: CGFloat(exposureValue), whiteBalanceValue: CGFloat(whiteBalanceValue))
     }
     
-    func setWhiteBalance() throws {
+    func changeSetting(_ setting: CameraSetting) throws {
         do {
-            cameraDevice.exposureMode = .autoExpose
+            try cameraDevice.lockForConfiguration()
+            
+            if setting.isAutoExposureEnabled, cameraDevice.isExposureModeSupported(.autoExpose) {
+                cameraDevice.exposureMode = .autoExpose
+            } else {
+                let p = pow(setting.exposureValue, Constants.kExposureDurationPower) // Apply power function to expand slider's low-end range
+                let minDurationSeconds = max(CMTimeGetSeconds(cameraDevice.activeFormat.minExposureDuration), Constants.kExposureMinimumDuration)
+                let maxDurationSeconds = CMTimeGetSeconds(cameraDevice.activeFormat.maxExposureDuration)
+                let newDurationSeconds = p * ( maxDurationSeconds - minDurationSeconds ) + minDurationSeconds; // Scale from 0-1 slider range to actual duration
+                
+                cameraDevice.setExposureModeCustom(duration: CMTimeMakeWithSeconds(newDurationSeconds, 1000*1000*1000), iso: AVCaptureDevice.currentISO, completionHandler: nil)
+            }
+            
+            if setting.isAutoWhiteBalanceEnabled, cameraDevice.isWhiteBalanceModeSupported(.autoWhiteBalance) {
+                cameraDevice.whiteBalanceMode = .autoWhiteBalance
+            } else {
+                let temperatureAndTint = AVCaptureDevice.WhiteBalanceTemperatureAndTintValues(temperature: Float(setting.whiteBalanceValue), tint: 0.0)
+                let gains = cameraDevice.deviceWhiteBalanceGains(for: temperatureAndTint)
+                let normalizedGains = self.normalizedGains(gains) // Conversion can yield out-of-bound values, cap to limits
+                cameraDevice.setWhiteBalanceModeLocked(with: normalizedGains, completionHandler: nil)
+            }
+            
+            cameraDevice.unlockForConfiguration()
         } catch {
-            throw CameraSettingError.cannotAddWhiteBalance
+            throw CameraSettingError.failedToApply
         }
     }
     
-    func enableAutoExposure() {
-        cameraDevice.exposureMode = .autoExpose
+    private func normalizedGains(_ gains: AVCaptureDevice.WhiteBalanceGains) -> AVCaptureDevice.WhiteBalanceGains {
+        var g = gains
+        
+        g.redGain = max(1.0, g.redGain)
+        g.greenGain = max(1.0, g.greenGain)
+        g.blueGain = max(1.0, g.blueGain)
+        
+        g.redGain = min(cameraDevice.maxWhiteBalanceGain, g.redGain)
+        g.greenGain = min(cameraDevice.maxWhiteBalanceGain, g.greenGain)
+        g.blueGain = min(cameraDevice.maxWhiteBalanceGain, g.blueGain)
+        
+        return g
     }
-    
-    func enableAutoWhiteBalance() {
-        cameraDevice.whiteBalanceMode = .autoWhiteBalance
-    }
-    
 }
 
 // MARK: - AVCaptureVideoDataOutputSampleBufferDelegate

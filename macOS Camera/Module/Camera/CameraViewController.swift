@@ -55,14 +55,21 @@ final class CameraViewController: NSViewController {
     
     @IBAction func settingAction(_ sender: Any) {
         let storyBoard = NSStoryboard(name: NSStoryboard.Name("Main"), bundle: nil)
-        if let viewController : NSViewController = storyBoard.instantiateController(withIdentifier: NSStoryboard.SceneIdentifier("SettingsViewController")) as? NSViewController {
+        if let viewController = storyBoard.instantiateController(withIdentifier: NSStoryboard.SceneIdentifier("SettingsViewController")) as? SettingsViewController {
+            viewController.viewDelegate = self
+            viewController.settingManager = cameraManager as! CameraSettingProtocol
             self.presentAsSheet(viewController)
         }
     }
 }
 
+extension CameraViewController: SettingsViewDelegate {
+    func didChangeSetting(_ setting: CameraSetting) {
+        try? cameraManager.changeSetting(setting)
+    }
+}
+
 extension CameraViewController: CameraManagerDelegate {
-    
     func devicesList(_ list: [AVCaptureDevice]) {
         self.datasource = list
         videoCaptureComboBox.reloadData()
